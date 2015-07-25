@@ -283,7 +283,7 @@ var events = Viva.Graph.webglInputEvents(graphics, graph),
         if(link.t == "i"){
             var node = graph.getNode(link.from); 
             if( !node ){
-                graph.addNode(link.from,{s:link.value,t:link.t});
+                graph.addNode(link.from,{s:link.value,t:link.t,a:Date.now()});
             } else {
                 // such a node already exists
                 if(node.data && node.data.t && node.data.t == "o" ){
@@ -295,7 +295,7 @@ var events = Viva.Graph.webglInputEvents(graphics, graph),
         } else if(link.t == "o"){
             var node = graph.getNode(link.to); 
             if( ! node){
-                graph.addNode(link.to,{s:link.value,t:link.t});
+                graph.addNode(link.to,{s:link.value,t:link.t,a:Date.now()});
             } else {
                 // such a node alredy exists.  
                 if(node.data && node.data.t && node.data.t == "i"){

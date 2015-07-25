@@ -164,7 +164,7 @@
                 }
             });
             
-            document.getElementById("info").innerHTML = label+"<br/>"+id+"<br/>balance: "+balance +" BTC";
+            document.getElementById("info").innerHTML = label+"<br/>"+id+"<br/>balance: "+balance +" BTC<br/>timestamp:"+node.data.a;
 
         }else{
             // transaction node
@@ -268,15 +268,11 @@ var events = Viva.Graph.webglInputEvents(graphics, graph),
      	output = document.getElementById("output"); 
      	testWebSocket();
      }  
-     
 
      var colorNodes = function(node, color) {
          if (node && node.id) {
-             graph.forEachNode(function(node){
-             	if (a > maxage)	{
-             		graph.removeNode(node);
-             	}
-                else if (color) { 
+             graph.forEachNode(function(node){	
+				if (color) { 
                     node.ui.color = color;
                 }
             });
@@ -284,7 +280,7 @@ var events = Viva.Graph.webglInputEvents(graphics, graph),
      };
 
      function addNodes(link){
-        
+		
         if(link.t == "i"){
             var node = graph.getNode(link.from); 
             if( !node ){
@@ -309,7 +305,7 @@ var events = Viva.Graph.webglInputEvents(graphics, graph),
                     renderer.rerender();
                 }
             }
-        } 
+        }
      }
 
      function testWebSocket() { 
@@ -354,6 +350,19 @@ var events = Viva.Graph.webglInputEvents(graphics, graph),
                         t:"o"
      				});
      			}
+				graph.forEachNode(function(node){
+					if (node && node.data)	{
+						if (node.data.a < Date.now() - maxage)	{
+							graph.forEachLinkedNode(node.id,function(linkedNode,link){
+								var toid = link.toId;
+								graph.removeLink(link);
+								graph.removeNode(linkedNode.id);
+							});
+							graph.removeNode(node.id);
+							renderer.rerender();
+						}
+					}
+				});	
      		}
 
 

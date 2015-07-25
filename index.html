@@ -64,6 +64,10 @@
     
 </body>
     <script language="javascript" type="text/javascript">  
+    if (!Date.now) {
+	    Date.now = function() { return new Date().getTime(); }
+	}
+    
     var maxage = 15 * 60 * 1000;
     
     // viva graph part 

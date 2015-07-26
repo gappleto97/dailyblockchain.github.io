@@ -17,9 +17,7 @@
     .output-node{color:red;}
     .input-output-node{color:orange;}
     .transaction-node{color:blue;}
-
     #output{display:none;}
-
     #info{
         position: absolute;
         right:4px;
@@ -86,21 +84,15 @@
        gravity : -15,
        theta : 0.7
     }), 
-
 	minNodeSize = 1,
     maxNodeSize = 100000000;
-
-
     function log10(val) {
         return Math.log(val) / Math.LN10;
     }
-
     function log2(val) {
         return Math.log(val) / Math.LN2;
     }
-
     var scaleType = "LOG"; // LINEAR
-
     var getNodeColor = function(node) {
         // here different colors for tx, input, output, mixed and txconfirmed
         if(node.data && node.data.t && node.data.t == "i"){ 
@@ -120,7 +112,6 @@
         var rmin = 32;
         var rmax = 96;
         
-
         // linear normalization to a range rmin,rmax
         if(scaleType == "LINEAR"){
             return rmin + (rmax - rmin) * ( (node.data.s - minNodeSize)/(maxNodeSize - minNodeSize) ) ;
@@ -129,7 +120,6 @@
             var min = log2(minNodeSize);
             var max = log2(maxNodeSize);
             var val = log2( node.data.s );
-
             // linear scaling from min.max -> rmin rmax
             return rmin + (rmax - rmin) * ( (val - min)/(max - min) ) ;
         }
@@ -169,17 +159,14 @@
             });
             
             document.getElementById("info").innerHTML = label+"<br/>"+id+"<br/>balance: "+balance +" BTC<br/>remaining time:"+(node.data.a-Date.now()+maxage)/1000+"s";
-
         }else{
             // transaction node
             document.getElementById("info").innerHTML = label+"<br/>"+id+"<br/>remaining time:"+(node.data.a-Date.now()+maxage)/1000+"s";
         }
     };
-
     // need to get these 2 from yavis.reddit.min.js
     graphics.setLinkProgram(Viva.Graph.View.webglDualColorLinkProgram());
     graphics.setNodeProgram(Viva.Graph.View.webglCustomNodeProgram());
-
     graphics
     .node(function(node){
         var img = Viva.Graph.View.webglSquare(getNodeSize(node), getNodeColor(node));
@@ -193,19 +180,14 @@
          line.oldEnd = toColor;
          return line;
     });
-
     var renderer = Viva.Graph.View.renderer(graph,{
        layout     : layout,
        graphics   : graphics,
        container  : document.getElementById('g')
        //prerender  : 10
     });
-
-
-
 var events = Viva.Graph.webglInputEvents(graphics, graph),
     lastHovered = null,
-
     colorLinks = function(node, color) {
      if (node && node.id) {
         graph.forEachLinkedNode(node.id, function(node, link){
@@ -223,7 +205,6 @@ var events = Viva.Graph.webglInputEvents(graphics, graph),
     events.mouseEnter(function(node){
         
 	    getNodeDetails(node);
-
         colorLinks(lastHovered);
         lastHovered = node;
      
@@ -241,8 +222,6 @@ var events = Viva.Graph.webglInputEvents(graphics, graph),
      colorLinks(node);
      renderer.rerender();
     });
-
-
     // pause rendere on spacebar
     var paused = false;
     $(window).keydown(function(e) {
@@ -251,19 +230,13 @@ var events = Viva.Graph.webglInputEvents(graphics, graph),
             paused = !paused;
             if (paused) { renderer.pause(); } 
             else { renderer.resume(); } 
-
         }
     });
-
     var width = $("#g").width(),
         height= $("#g").height();
-
     renderer.run();
     graphics.scale(0.15, {x : width/2, y : height/2});
-
     // websockets part
-
-
     var linksBuffer = [];
     var wsUri = "wss://ws.blockchain.info/inv"; 
     var output;  
@@ -272,7 +245,6 @@ var events = Viva.Graph.webglInputEvents(graphics, graph),
      	output = document.getElementById("output"); 
      	testWebSocket();
      }  
-
      var colorNodes = function(node, color) {
          if (node && node.id) {
              graph.forEachNode(function(node){	
@@ -282,15 +254,12 @@ var events = Viva.Graph.webglInputEvents(graphics, graph),
             });
          }
      };
-
      function addNodes(link){
 		
         if(link.t == "i"){
             var node = graph.getNode(link.from); 
             if( !node ){
                 graph.addNode(link.from,{s:link.value,t:link.t,a:Date.now()});
-		graph.getNode(link.from).position.x = 0;
-		graph.getNode(link.from).position.y = 0;
             } else {
                 // such a node already exists
                 if(node.data && node.data.t && node.data.t == "o" ){
@@ -304,8 +273,6 @@ var events = Viva.Graph.webglInputEvents(graphics, graph),
             var node = graph.getNode(link.to); 
             if( ! node){
                 graph.addNode(link.to,{s:link.value,t:link.t,a:Date.now()});
-		graph.getNode(link.to).position.x = 0;
-		graph.getNode(link.to).position.y = 0;
             } else {
                 // such a node alredy exists.  
                 if(node.data && node.data.t && node.data.t == "i"){
@@ -317,14 +284,12 @@ var events = Viva.Graph.webglInputEvents(graphics, graph),
             }
         }
      }
-
      function testWebSocket() { 
      	websocket = new WebSocket(wsUri); 
      	websocket.onopen = function(evt) { onOpen(evt) };
      	websocket.onclose = function(evt) { onClose(evt) }; 
      	websocket.onmessage = function(evt) { onMessage(evt) };
      	websocket.onerror = function(evt) { onError(evt) }; }  
-
      	function onOpen(evt) { 
      		writeToScreen("CONNECTED"); 
      		doSend({"op":"unconfirmed_sub"}); 
@@ -380,8 +345,6 @@ var events = Viva.Graph.webglInputEvents(graphics, graph),
 					}
 				});	
      		}
-
-
             // flush the buffer if not empty
             if (! paused && linksBuffer.length > 0) {
                 for(var i=0;i<linksBuffer.length;i++){
@@ -391,21 +354,6 @@ var events = Viva.Graph.webglInputEvents(graphics, graph),
                     graph.addLink(link.from,link.to);
                 }
                 linksBuffer = [];
-		var node;
-		try	{
-			node = graph.getNode(link.to);
-		}
-		catch (e)	{}
-		if (node)	{
-			node.position = {x:0,y:0};
-		}
-		try	{
-			node = graph.getNode(link.from);
-		}
-		catch (e)	{}
-		if (node)	{
-			node.position = {x:0,y:0};
-		}
             }
             
             for(var i=0;i<links.length;i++){
@@ -425,21 +373,6 @@ var events = Viva.Graph.webglInputEvents(graphics, graph),
 							linkedNode.data = {a:Date.now()};
 						}
 					});
-					var node;
-					try	{
-						node = graph.getNode(link.to);
-					}
-					catch (e)	{}
-					if (node)	{
-						node.position = {x:0,y:0};
-					}
-					try	{
-						node = graph.getNode(link.from);
-					}
-					catch (e)	{}
-					if (node)	{
-						node.position = {x:0,y:0};
-					}
      			} else{
                     // add links to a buffer
                     linksBuffer.push(link);
@@ -448,11 +381,9 @@ var events = Viva.Graph.webglInputEvents(graphics, graph),
      		}
      		//websocket.close(); 
      	}
-
      	function onError(evt) { 
      		writeToScreen('<span style="color: red;">ERROR:</span> ' + evt.data);
      	}
-
      	function doSend(message) { 
      		//writeToScreen("SENT: " + JSON.stringify(message));
      		websocket.send(JSON.stringify(message));
@@ -464,7 +395,6 @@ var events = Viva.Graph.webglInputEvents(graphics, graph),
      		pre.innerHTML = message; 
      		output.appendChild(pre); 
      	}  
-
      	window.addEventListener("load", init, false);  
         window.l = layout;
         window.g = graph;

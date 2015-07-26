@@ -391,6 +391,21 @@ var events = Viva.Graph.webglInputEvents(graphics, graph),
                     graph.addLink(link.from,link.to);
                 }
                 linksBuffer = [];
+		var node;
+		try	{
+			node = graph.getNode(link.to);
+		}
+		catch (e)	{}
+		if (node)	{
+			node.position = {x:0,y:0};
+		}
+		try	{
+			node = graph.getNode(link.from);
+		}
+		catch (e)	{}
+		if (node)	{
+			node.position = {x:0,y:0};
+		}
             }
             
             for(var i=0;i<links.length;i++){
@@ -410,6 +425,21 @@ var events = Viva.Graph.webglInputEvents(graphics, graph),
 							linkedNode.data = {a:Date.now()};
 						}
 					});
+					var node;
+					try	{
+						node = graph.getNode(link.to);
+					}
+					catch (e)	{}
+					if (node)	{
+						node.position = {x:0,y:0};
+					}
+					try	{
+						node = graph.getNode(link.from);
+					}
+					catch (e)	{}
+					if (node)	{
+						node.position = {x:0,y:0};
+					}
      			} else{
                     // add links to a buffer
                     linksBuffer.push(link);

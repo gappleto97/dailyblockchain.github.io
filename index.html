@@ -369,7 +369,9 @@ var events = Viva.Graph.webglInputEvents(graphics, graph),
 							//if (lin && lin.id)	{
 							//	graph.removeNode(lin.id);
 							//}
-							renderer.rerender();
+							if (!pause)	{
+								renderer.rerender();
+							}
 						}
 					}
 				});	

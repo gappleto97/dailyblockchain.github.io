@@ -293,7 +293,7 @@ var events = Viva.Graph.webglInputEvents(graphics, graph),
      	function onOpen(evt) { 
      		writeToScreen("CONNECTED"); 
      		doSend({"op":"unconfirmed_sub"}); 
-     		doSent({"op":"blocks_sub"});
+     		doSend({"op":"blocks_sub"});
      	}
      	
      	function onClose(evt) { writeToScreen("DISCONNECTED"); }  

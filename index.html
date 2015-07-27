@@ -67,6 +67,7 @@
 	}
     
     var maxage = 15 * 60 * 1000;
+    var paused = false;
     
     // viva graph part 
     var graphics = Viva.Graph.View.webglGraphics();
@@ -225,7 +226,6 @@ var events = Viva.Graph.webglInputEvents(graphics, graph),
      renderer.rerender();
     });
     // pause rendere on spacebar
-    var paused = false;
     $(window).keydown(function(e) {
         if (e.keyCode === 32) { // toggle on spacebar; 
             e.preventDefault();

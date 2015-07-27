@@ -302,12 +302,12 @@ var events = Viva.Graph.webglInputEvents(graphics, graph),
      		// parse message
      		var msg = JSON.parse(evt.data);
      		var txHash = msg.x.hash;
+     			var links = [];
             if(msg.op == "utx"){
      			// uncorfimed transactions
      			var inputs = msg.x.inputs;
      			var outputs = msg.x.out;
      			// generate from to 
-     			var links = [];
      			for(var i=0;i<inputs.length;i++){
      				var input = inputs[i];
      				links.push({

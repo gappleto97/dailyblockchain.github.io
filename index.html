@@ -150,7 +150,7 @@
                 //url:"http://blockchain.info/address/"+id+"?format=json&limit=1&cors=true",
                 //url:"http://blockchain.info/rawblock/123?cors=true&format=json",
                 url:"https://blockchain.info/q/addressbalance/"+id+"?cors=true",
-                async:false,
+                async:true,
                 crossDomain:true,
                 dataType:"text",
                 success:function(text){
@@ -191,12 +191,13 @@ var events = Viva.Graph.webglInputEvents(graphics, graph),
     colorLinks = function(node, color) {
      if (node && node.id) {
         graph.forEachLinkedNode(node.id, function(node, link){
+            var linkui = graphics.getLinkUI(link.id);
             if (color) { 
-                link.ui.start = link.ui.end = color;
+                linkui.start = linkui.end = color;
             } else {
                 //link.ui.start = link.ui.oldStart; 
                 //link.ui.end =link.ui.oldEnd;
-                link.ui.start = link.ui.end = 0x80808040;
+                linkui.start = linkui.end = 0x80808040;
             } 
         });
      }
@@ -209,8 +210,9 @@ var events = Viva.Graph.webglInputEvents(graphics, graph),
         lastHovered = node;
      
         graph.forEachLinkedNode(node.id, function(node, link){
-            link.ui.start = link.ui.end = 0xffffffff;
-            graphics.bringLinkToFront(link.ui);
+            var linkui = graphics.getLinkUI(link.id);
+            linkui.start = linkui.end = 0xffffffff;
+            graphics.bringLinkToFront(linkui);
         });
      
      renderer.rerender();
@@ -249,7 +251,8 @@ var events = Viva.Graph.webglInputEvents(graphics, graph),
          if (node && node.id) {
              graph.forEachNode(function(node){	
 				if (color) { 
-                    node.ui.color = color;
+                    var ui = graphics.getNodeUI(node.id);
+                    ui.color = color;
                 }
             });
          }
@@ -260,12 +263,15 @@ var events = Viva.Graph.webglInputEvents(graphics, graph),
             var node = graph.getNode(link.from); 
             if( !node ){
                 graph.addNode(link.from,{s:link.value,t:link.t,a:Date.now()});
+                node = graph.getNode(link.from)
+                layout.setNodePosition(node.id,0,0);
             } else {
                 // such a node already exists
                 if(node.data && node.data.t && node.data.t == "o" ){
 					node.data.a = Date.now();
                     node.data.t = "mix";
-                    node.ui.color = 16776960;
+                    var ui = graphics.getNodeUI(node.id);
+                    ui.color = 16776960;
                     renderer.rerender();
                 }
             }
@@ -273,12 +279,15 @@ var events = Viva.Graph.webglInputEvents(graphics, graph),
             var node = graph.getNode(link.to); 
             if( ! node){
                 graph.addNode(link.to,{s:link.value,t:link.t,a:Date.now()});
+                node = graph.getNode(link.from)
+                layout.setNodePosition(node.id,0,0);
             } else {
                 // such a node alredy exists.  
                 if(node.data && node.data.t && node.data.t == "i"){
 					node.data.a = Date.now();
                     node.data.t = "mix";
-                    node.ui.color = 16776960;
+                    var ui = graphics.getNodeUI(node.id);
+                    ui.color = 16776960;
                     renderer.rerender();
                 }
             }
@@ -302,12 +311,13 @@ var events = Viva.Graph.webglInputEvents(graphics, graph),
      		// parse message
      		var msg = JSON.parse(evt.data);
      		var txHash = msg.x.hash;
-     			var links = [];
+            var links = [];
             if(msg.op == "utx"){
      			// uncorfimed transactions
      			var inputs = msg.x.inputs;
      			var outputs = msg.x.out;
      			// generate from to 
+     			var links = [];
      			for(var i=0;i<inputs.length;i++){
      				var input = inputs[i];
      				links.push({
@@ -377,6 +387,7 @@ var events = Viva.Graph.webglInputEvents(graphics, graph),
 							linkedNode.data = {a:Date.now()};
 						}
 					});
+                    layout.setNodePosition(link.from,0,0);
      			} else{
                     // add links to a buffer
                     linksBuffer.push(link);

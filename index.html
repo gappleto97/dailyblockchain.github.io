@@ -293,6 +293,7 @@ var events = Viva.Graph.webglInputEvents(graphics, graph),
      	function onOpen(evt) { 
      		writeToScreen("CONNECTED"); 
      		doSend({"op":"unconfirmed_sub"}); 
+     		doSent({"op":"blocks_sub"});
      	}
      	
      	function onClose(evt) { writeToScreen("DISCONNECTED"); }  
@@ -344,6 +345,9 @@ var events = Viva.Graph.webglInputEvents(graphics, graph),
 						}
 					}
 				});	
+     		}
+     		else if (msg.op == "block")	{
+     			;
      		}
             // flush the buffer if not empty
             if (! paused && linksBuffer.length > 0) {

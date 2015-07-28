@@ -97,7 +97,15 @@
     var scaleType = "LOG"; // LINEAR
     var getNodeColor = function(node) {
         // here different colors for tx, input, output, mixed and txconfirmed
-        if(node.data && node.data.t && node.data.t == "i"){ 
+        if (node.data && node.data.c == true)   {
+            if (node.data.t && node.data.t == "o")  {
+                return 0xFFFFFF;
+            }
+            else if (node.data.t)   {
+                return 0xFF69B4;
+            }
+        }
+        else if(node.data && node.data.t && node.data.t == "i"){ 
             return 0x00FF00;
         }else if(node.data && node.data.t && node.data.t == "o"){
             return 0xFF0000;
@@ -187,6 +195,7 @@
          line.oldEnd = toColor;
          return line;
     });
+    var input = Viva.Graph.webglInputEvents(graphics);
     var renderer = Viva.Graph.View.renderer(graph,{
        layout     : layout,
        graphics   : graphics,
@@ -211,6 +220,13 @@ var events = Viva.Graph.webglInputEvents(graphics, graph),
     };
                  
     events.mouseEnter(function(node){
+
+        input.Click = [function() {
+            if (node.t == "o" || node.t == "i" || node.t == "mix")  {
+                var win = window.open("https://blockchain.info/address/" + node.id,'_blank');
+                win.focus();
+            }
+        }];
         
 	    getNodeDetails(node);
         colorLinks(lastHovered); 
@@ -224,6 +240,8 @@ var events = Viva.Graph.webglInputEvents(graphics, graph),
      
      renderer.rerender();
     }).mouseLeave(function(node) {
+
+    input.Click = [];
      
      colorLinks(lastHovered);
      lastHovered = null;
@@ -268,30 +286,74 @@ var events = Viva.Graph.webglInputEvents(graphics, graph),
         if(link.t == "i"){
             var node = graph.getNode(link.from); 
             if( !node && link.from != 'undefined'){
-                graph.addNode(link.from,{s:link.value,t:link.t,a:Date.now()});
+                graph.addNode(link.from,{s:link.value,t:link.t,a:Date.now(),c:false});
                 node = graph.getNode(link.from)
+                $.ajax({
+                    //url:"http://blockchain.info/address/"+id+"?format=json&limit=1&cors=true",
+                    //url:"http://blockchain.info/rawblock/123?cors=true&format=json",
+                    url:"https://counterpartychain.io/api/transaction/"+link.to,
+                    async:true,
+                    crossDomain:true,
+                    dataType:"json",
+                    success:function(json){
+                        if (json.success && json.success == "1")    {
+                            node.c = true;
+                            var ui = graphics.getNodeUI(node.id);
+                            ui.color = 0xFF69B4;
+                            ui = graphics.getNodeUI(link.to);
+                            ui.color = 0x7D26CD;
+                        renderer.rerender();
+                        }
+                        //balance = text/100000000;
+                        //document.getElementById("info").innerHTML = label+"<br/>"+id+"<br/>balance: "+balance +" BTC<br/>remaining time:"+(node.data.a-Date.now()+maxage)/1000+"s";
+                    }
+                });
             } else if (link.from != 'undefined') {
                 // such a node already exists
                 if(node.data && node.data.t && node.data.t == "o" ){
 					node.data.a = Date.now();
                     node.data.t = "mix";
                     var ui = graphics.getNodeUI(node.id);
-                    ui.color = 16776960;
+                    if (node.data.c == true)    {
+                        ui.color = 0xFF69B4;
+                    }else   {
+                        ui.color = 16776960;
+                    }
                     renderer.rerender();
                 }
             }
         } else if(link.t == "o"){
             var node = graph.getNode(link.to); 
             if( ! node && link.to != 'undefined'){
-                graph.addNode(link.to,{s:link.value,t:link.t,a:Date.now()});
+                graph.addNode(link.to,{s:link.value,t:link.t,a:Date.now(),c:false});
                 node = graph.getNode(link.from)
+                $.ajax({
+                    url:"https://counterpartychain.io/api/transaction/"+link.from,
+                    async:true,
+                    crossDomain:true,
+                    dataType:"json",
+                    success:function(json){
+                        if (json.success && json.success == "1")    {
+                            node.c = true;
+                            var ui = graphics.getNodeUI(node.id);
+                            ui.color = 0xFF69B4;
+                            ui = graphics.getNodeUI(link.from);
+                            ui.color = 0x7D26CD;
+                            renderer.rerender();
+                        }
+                    }
+                });
             } else if (link.to != 'undefined') {
                 // such a node alredy exists.  
                 if(node.data && node.data.t && node.data.t == "i"){
 					node.data.a = Date.now();
                     node.data.t = "mix";
                     var ui = graphics.getNodeUI(node.id);
-                    ui.color = 16776960;
+                    if (node.data.c == true)    {
+                        ui.color = 0xFFFFFF;
+                    }else   {
+                        ui.color = 16776960;
+                    }
                     renderer.rerender();
                 }
             }

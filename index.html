@@ -307,6 +307,7 @@ var events = Viva.Graph.webglInputEvents(graphics, graph),
      		writeToScreen("CONNECTED"); 
      		doSend({"op":"unconfirmed_sub"}); 
      		doSend({"op":"blocks_sub"});
+            doSend({"op":"ping_block"});
      	}
      	
      	function onClose(evt) { writeToScreen("DISCONNECTED"); }  
@@ -340,29 +341,42 @@ var events = Viva.Graph.webglInputEvents(graphics, graph),
                         t:"o"
      				});
      			}
-				graph.forEachNode(function(node){
-					if (node && node.data && garbageidle < Date.now())	{
-						if (node.data.a < Date.now() - maxage)	{
-							var lin;
-							graph.forEachLinkedNode(node.id,function(linkedNode,link){
-								var toid = link.toId;
-								lin = linkedNode;
-								graph.removeLink(link);
-							});
-							graph.removeNode(node.id);
-							//if (lin && lin.id)	{
-							//	graph.removeNode(lin.id);
-							//}
-							if (!pause)	{
-								renderer.rerender();
-							}
-                            garbageidle = Date.now() + 1000;
-						}
-					}
-				});	
+                if (garbageidle < Date.now())   {
+    				graph.forEachNode(function(node){
+    					if (node && node.data)	{
+    						if (node.data.a < Date.now() - maxage)	{
+    							var lin;
+    							graph.forEachLinkedNode(node.id,function(linkedNode,link){
+    								var toid = link.toId;
+    								lin = linkedNode;
+    								graph.removeLink(link);
+    							});
+    							graph.removeNode(node.id);
+    							//if (lin && lin.id)	{
+    							//	graph.removeNode(lin.id);
+    							//}
+    							if (!pause)	{
+    								renderer.rerender();
+    							}
+                                garbageidle = Date.now() + 1000;
+    						}
+    					}
+    				});	
+                }
      		}
      		else if (msg.op == "block")	{
-     			;
+/*     			graph.addNode(txHash,{s:msg.x.totalBTCSent,i:msg.x.txIndexes});
+                if (paused)
+                    renderer.pause();
+                graph.forEachNode(function(node){
+                    var ui = graphics.getNodeUI(node.id);
+                    if ((node.id).substring(0,6) != "000000")   {
+                        ui.size =  getNodeSize(node);
+                    }
+                    else    {
+                        ui.size = node.data.s / 3000000000;
+                    }
+                })*/
      		}
             // flush the buffer if not empty
             if (! paused && linksBuffer.length > 0) {
@@ -422,7 +436,13 @@ var events = Viva.Graph.webglInputEvents(graphics, graph),
         $("input[name='scaleType']").change(function(){
             scaleType = this.value;
             graph.forEachNode(function(node){
-                node.ui.size =  getNodeSize(node);
+                var ui = graphics.getNodeUI(node.id);
+                if ((node.id).substring(0,6) != "000000")   {
+                    ui.size =  getNodeSize(node);
+                }
+                else    {
+                    ui.size = node.data.s / 3000000000;
+                }
             })
         });
         </script> 

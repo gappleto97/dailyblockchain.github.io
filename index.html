@@ -66,8 +66,9 @@
 	    Date.now = function() { return new Date().getTime(); }
 	}
     
-    var maxage = 15 * 60 * 1000;
-    var paused = false;
+    var maxage = 15 * 60 * 1000,
+        paused = false,
+        garbageidle = 0;
     
     // viva graph part 
     var graphics = Viva.Graph.View.webglGraphics();
@@ -147,19 +148,21 @@
             
             var balance = 0;
             //lets get balance
+            document.getElementById("info").innerHTML = "Loading...";
             $.ajax({
                 //url:"http://blockchain.info/address/"+id+"?format=json&limit=1&cors=true",
                 //url:"http://blockchain.info/rawblock/123?cors=true&format=json",
                 url:"https://blockchain.info/q/addressbalance/"+id+"?cors=true",
-                async:false,
+                async:true,
                 crossDomain:true,
                 dataType:"text",
                 success:function(text){
                     balance = text/100000000;
+                    document.getElementById("info").innerHTML = label+"<br/>"+id+"<br/>balance: "+balance +" BTC<br/>remaining time:"+(node.data.a-Date.now()+maxage)/1000+"s";
                 }
             });
             
-            document.getElementById("info").innerHTML = label+"<br/>"+id+"<br/>balance: "+balance +" BTC<br/>remaining time:"+(node.data.a-Date.now()+maxage)/1000+"s";
+            //document.getElementById("info").innerHTML = label+"<br/>"+id+"<br/>balance: "+balance +" BTC<br/>remaining time:"+(node.data.a-Date.now()+maxage)/1000+"s";
         }else{
             // transaction node
             document.getElementById("info").innerHTML = label+"<br/>"+id+"<br/>remaining time:"+(node.data.a-Date.now()+maxage)/1000+"s";
@@ -207,7 +210,7 @@ var events = Viva.Graph.webglInputEvents(graphics, graph),
     events.mouseEnter(function(node){
         
 	    getNodeDetails(node);
-        colorLinks(lastHovered);
+        colorLinks(lastHovered); 
         lastHovered = node;
      
         graph.forEachLinkedNode(node.id, function(node, link){
@@ -335,7 +338,7 @@ var events = Viva.Graph.webglInputEvents(graphics, graph),
      				});
      			}
 				graph.forEachNode(function(node){
-					if (node && node.data)	{
+					if (node && node.data && garbageidle < Date.now())	{
 						if (node.data.a < Date.now() - maxage)	{
 							var lin;
 							graph.forEachLinkedNode(node.id,function(linkedNode,link){
@@ -350,6 +353,7 @@ var events = Viva.Graph.webglInputEvents(graphics, graph),
 							if (!pause)	{
 								renderer.rerender();
 							}
+                            garbageidle = Date.now() + 1000;
 						}
 					}
 				});	

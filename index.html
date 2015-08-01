@@ -149,7 +149,7 @@
             
             var balance = 0;
             //lets get balance
-            document.getElementById("info").innerHTML = "Loading...";
+            document.getElementById("info").innerHTML = label+"<br/>"+id+"<br/>balance: Loading...<br/>remaining time:"+(node.data.a-Date.now()+maxage)/1000+"s";
             $.ajax({
                 //url:"http://blockchain.info/address/"+id+"?format=json&limit=1&cors=true",
                 //url:"http://blockchain.info/rawblock/123?cors=true&format=json",

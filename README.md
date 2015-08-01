@@ -7,6 +7,28 @@ The Javascript implementation utilizes Vivagraph.js to map out bitcoin transacti
 
 Currently proposed data definitions are a little obfuscated to have the least transcribing possible, and decrease server-side lag. If performance is high enough, it will be simplified.
 
+    Connected:
+        {
+            "op": "connected",
+            "x": {
+                "nTx": 0,
+                "totalBTCSent": 0,
+                "estimatedBTCSent": 0,
+                "reward": 0,
+                "size": 0,
+                "blockIndex": 190460,
+                "prevBlockIndex": 190457,
+                "height": 170359,
+                "hash": "00000000000006436073c07dfa188a8fa54fefadf571fd774863cda1b884b90f",
+                "mrklRoot": "94e51495e0e8a0c3b78dac1220b2f35ceda8799b0a20cfa68601ed28126cfcc2",
+                "version": 1,
+                "time": 1331301261,
+                "bits": 436942092,
+                "nonce": 758889471
+            }
+        }
+[]()
+
     New Block:
         {
             "op": "block",

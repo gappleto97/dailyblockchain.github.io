@@ -16,8 +16,8 @@ modification, are permitted provided that the following conditions are met:
   
 Software referenced:
 
-> ./js/vivagraph.js
-> ./js/webgl_programs.js (assumed)
+> ../js/vivagraph.js
+> ../js/webgl_programs.js (assumed)
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE

@@ -73,5 +73,7 @@ Currently proposed data definitions are a little obfuscated to have the least tr
                 ]
             }
         }
+        
+These statistics are grabbed from a combination of [Blockchain.info](https://blockchain.info/api/api_websocket), [counterpartychain.io](https://counterpartychain.io/api), and [coinprism.apiary.io](http://docs.coinprism.apiary.io/#reference/blockchain-query-apis/get-a-transaction/get). More dependencies will be added as they are used.
 
 This is being created in partnership with [bits.coinlaunch.com](http://bits.coinlaunch.com).

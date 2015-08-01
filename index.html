@@ -67,7 +67,7 @@
 	    Date.now = function() { return new Date().getTime(); }
 	}
     
-    var maxage = 15 * 60 * 1000,
+    var maxage = 8 * 60 * 1000,
         paused = false,
         garbageidle = 0;
     
@@ -149,7 +149,7 @@
             
             var balance = 0;
             //lets get balance
-            document.getElementById("info").innerHTML = label+"<br/>"+id+"<br/>balance: Loading...<br/>remaining time:"+(node.data.a-Date.now()+maxage)/1000+"s";
+            document.getElementById("info").innerHTML = label+"<br/>"+id+"<br/>balance: Loading...<br/>remaining time:"+(node.data.a-Date.now()+maxage+node.links.length*25)/1000+"s";
             $.ajax({
                 //url:"http://blockchain.info/address/"+id+"?format=json&limit=1&cors=true",
                 //url:"http://blockchain.info/rawblock/123?cors=true&format=json",
@@ -159,17 +159,17 @@
                 dataType:"text",
                 success:function(text){
                     balance = text/100000000;
-                    document.getElementById("info").innerHTML = label+"<br/>"+id+"<br/>balance: "+balance +" BTC<br/>remaining time:"+(node.data.a-Date.now()+maxage)/1000+"s";
+                    document.getElementById("info").innerHTML = label+"<br/>"+id+"<br/>balance: "+balance +" BTC<br/>remaining time:"+(node.data.a-Date.now()+maxage+node.links.length*25)/1000+"s";
                 },
                 error:function(){
-                    document.getElementById("info").innerHTML = label+"<br/>"+id+"<br/>balance: throttled by Blockchain.info<br/>remaining time:"+(node.data.a-Date.now()+maxage)/1000+"s";
+                    document.getElementById("info").innerHTML = label+"<br/>"+id+"<br/>balance: throttled by Blockchain.info<br/>remaining time:"+(node.data.a-Date.now()+maxage+nodes.link.length*25)/1000+"s";
                 }
             });
             
             //document.getElementById("info").innerHTML = label+"<br/>"+id+"<br/>balance: "+balance +" BTC<br/>remaining time:"+(node.data.a-Date.now()+maxage)/1000+"s";
         }else{
             // transaction node
-            document.getElementById("info").innerHTML = label+"<br/>"+id+"<br/>remaining time:"+(node.data.a-Date.now()+maxage)/1000+"s";
+            document.getElementById("info").innerHTML = label+"<br/>"+id+"<br/>remaining time:"+(node.data.a-Date.now()+maxage+node.links.length*25)/1000+"s";
         }
     };
     // need to get these 2 from yavis.reddit.min.js
@@ -345,7 +345,7 @@ var events = Viva.Graph.webglInputEvents(graphics, graph),
                 if (garbageidle < Date.now())   {
     				graph.forEachNode(function(node){
     					if (node && node.data)	{
-    						if (node.data.a < Date.now() - maxage)	{
+    						if (node.data.a < Date.now() - maxage - node.links.length * 25)	{
     							var lin;
     							graph.forEachLinkedNode(node.id,function(linkedNode,link){
     								var toid = link.toId;

@@ -69,16 +69,18 @@ Currently proposed data definitions are a little obfuscated to have the least tr
                 "tx_index": 3187820,
                 "time": 1331300839,
                 "counterparty": true,
-                "cp_asset_type": "gems",
-                "cp_asset_count": 24.0,
-                "cp_tx_type": "issuance",
+                "colored": true,
                 "inputs": [
                     {
                     "prev_out": {
                         "value": 10000000,
                         "type": 0,
                         "addr": "12JSirdrJnQ8QWUaGZGiBPBYD19LxSPXho",
+                        "counterparty": false,
                         "colored": true,
+                        "cp_asset_type": undefined,
+                        "cp_asset_count": undefined,
+                        "cp_tx_type": undefined,
                         "asset_id": "AN51SPP6iZBHFJ3aux1jtn6MMMD13Gh3t7",
                         "asset_quantity": "500"
                         }
@@ -89,9 +91,13 @@ Currently proposed data definitions are a little obfuscated to have the least tr
                         "value": 2800000000,
                         "type": 0,
                         "addr": "1FzzMfNt46cBeS41r6WHDH1iqxSyzmxChw",
+                        "counterparty": true,
                         "colored": false,
-                        "asset_id": null,
-                        "asset_quantity": null
+                        "cp_asset_type": "gems",
+                        "cp_asset_count": 24.0,
+                        "cp_tx_type": "issuance",
+                        "asset_id": undefined,
+                        "asset_quantity": undefined
                     }
                 ]
             }

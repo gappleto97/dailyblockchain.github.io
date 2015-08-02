@@ -33,8 +33,9 @@ Currently proposed data definitions are a little obfuscated to have the least tr
         {
             "op": "block",
             "x": {
-                "txs": [
-                    (see transaction def.)
+                "txIndexes": [
+                    1234567,
+                    8901234
                 ],
                 "nTx": 0,
                 "totalBTCSent": 0,

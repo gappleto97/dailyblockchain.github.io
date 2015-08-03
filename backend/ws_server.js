@@ -13,6 +13,12 @@ function httpGet(url)	{
 	return xmlHttp.responseText;
 }
 
+function sendAll(message)	{
+	for (i = 0; i < clients.length; i++)	{
+		clients[i].send(message);
+	}
+}
+
 function addClient(client)	{
 	clients.push(client);	
 	BCcon.send('{"op":"ping_tx"}');
@@ -22,6 +28,7 @@ function remClient(client)	{
 	var i = clients.indexOf(client);
 	if (i != -1)	{
 		clients.splice(i,1)[0].close(0,"server dropped you");
+		console.log("client " + i + " has disconnected.");
 	}
 }
 
@@ -50,9 +57,7 @@ BCSocket.on('connect',function(webSocketConnection)	{
 			console.log('done processing');
 			info.x.txIndexes = undefined;
 			info.x.txs = txs;
-			for (i = 0; i < clients.length; i++)	{
-				clients[i].sendUTF(info.toString());
-			}
+			sendAll(JSON.stringify(info));
 		}
 		else if (info.op == "utx")	{
 			var hash = info.x.hash;
@@ -62,43 +67,47 @@ BCSocket.on('connect',function(webSocketConnection)	{
 				info.x.cp_asset_type = cpinfo.asset;
 				info.x.cp_asset_count = cpinfo.quantity;
 				info.x.cp_tx_type = cpinfo.type;
+				info.x.source = cpinfo.source;
+				info.x.destination = cpinfo.destination;
 			}
 			else	{
 				info.x.counterparty = false;
 			}
-			var ccinfo = JSON.parse(httpGet("https://api.coinprism.com/v1/transactions/ + hash"));
-			for (i = 0; i < ccinfo.inputs.length; i++)	{
-				if (ccinfo.inputs[i].asset_id == null)
-					continue;
-				for (j = 0; j < info.x.inputs.length; j++)	{
-					if (info.x.inputs[j].addr == ccinfo.inputs[i].addresses[0])	{
-						info.x.inputs[j].asset_id = ccinfo.inputs[i].asset_id;
-						info.x.inputs[j].asset_quantity = ccinfo.inputs[i].asset_quantity;
-						break;
+			var ccinfo = JSON.parse(httpGet("https://api.coinprism.com/v1/transactions/" + hash));
+			clients[0].send("https://api.coinprism.com/v1/transactions/" + hash);
+			console.log(ccinfo);
+			if (ccinfo.Message != 'Error')	{
+				for (i = 0; i < (ccinfo.inputs).length; i++)	{
+					if (ccinfo.inputs[i].asset_id == null)
+						continue;
+					for (j = 0; j < (info.x.inputs).length; j++)	{
+						if (info.x.inputs[j].addr == ccinfo.inputs[i].addresses[0])	{
+							info.x.inputs[j].asset_id = ccinfo.inputs[i].asset_id;
+							info.x.inputs[j].asset_quantity = ccinfo.inputs[i].asset_quantity;
+							break;
+						}
+					}
+				}
+				for (i = 0; i < (ccarray).length; i++)	{
+					if (ccinfo.outputs[i].asset_id == null)
+						continue;
+					for (j = 0; j < (info.x.outputs).length; j++)	{
+						if (info.x.outputs[j].addr == ccinfo.outputs[i].addresses[0])	{
+							info.x.outputs[j].asset_id = ccinfo.outputs[i].asset_id;
+							info.x.outputs[j].asset_quantity = ccinfo.outputs[i].asset_quantity;
+							break;
+						}
 					}
 				}
 			}
-			for (i = 0; i < ccinfo.outputs.length; i++)	{
-				if (ccinfo.outputs[i].asset_id == null)
-					continue;
-				for (j = 0; j < info.x.outputs.length; j++)	{
-					if (info.x.outputs[j].addr == ccinfo.outputs[i].addresses[0])	{
-						info.x.outputs[j].asset_id = ccinfo.outputs[i].asset_id;
-						info.x.outputs[j].asset_quantity = ccinfo.outputs[i].asset_quantity;
-						break;
-					}
-				}
-			}
-			for (i = 0; i < clients.length; i++)	{
-				clients[i].sendUTF(info.toString());
-			}
+			sendAll(JSON.stringify(info));
 		}
 	});
 	BCcon.on('frame',function(webSocketFrame)	{
 		console.log('frame received');
 	});
 	BCcon.on('close',function(reasonCode,description)	{
-		console.log('Disconnected');
+		console.log('Disconnected from BC.I');
 	});
 	BCcon.on('error',function(error)	{
 		console.log('socket error');
@@ -157,7 +166,7 @@ wsServer.on('request', function(request) {
         }
     });
     connection.on('close', function(reasonCode, description) {
-        console.log((new Date()) + ' Peer ' + connection.remoteAddress + ' disconnected.');
+        remClient(connection);
     });
 	addClient(connection);
 });

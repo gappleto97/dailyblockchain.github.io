@@ -72,6 +72,8 @@ Currently proposed data definitions are a little obfuscated to have the least tr
                 "cp_asset_type": "gems",
                 "cp_asset_count": 24.0,
                 "cp_tx_type": "issuance",
+                "cp_source": "12JSirdrJnQ8QWUaGZGiBPBYD19LxSPXho",
+                "cp_dest": "1FzzMfNt46cBeS41r6WHDH1iqxSyzmxChw",
                 "inputs": [
                     {
                     "prev_out": {

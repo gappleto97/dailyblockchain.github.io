@@ -349,16 +349,25 @@ function onMessage(evt) {
         }
             
         if (! paused) {
+            try {
             addNodes(link);
-            graph.addLink(link.from,link.to);
-            graph.forEachLinkedNode(link.from,function(linkedNode,link){
-                if (linkedNode.data)    {
-                    linkedNode.data.a = Date.now();
-                }
-                else    {
-                    linkedNode.data = {a:Date.now()};
-                }
-            });
+                graph.addLink(link.from,link.to);
+                graph.forEachLinkedNode(link.from,function(linkedNode,link){
+                    if (linkedNode.data)    {
+                        linkedNode.data.a = Date.now();
+                    }
+                    else    {
+                        linkedNode.data = {a:Date.now()};
+                    }
+                });
+            } catch (e) {
+                try {
+                    graph.removeNode(link.from);
+                } catch(e){}
+                try {
+                    graph.removeNode(link.to);
+                } catch(e){}
+            }
         } else{
             // add links to a buffer
             linksBuffer.push(link);

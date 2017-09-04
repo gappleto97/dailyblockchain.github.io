@@ -185,7 +185,7 @@ renderer.run();
 graphics.scale(0.15, {x : width/2, y : height/2});
 // websockets part
 var linksBuffer = [];
-var wsUri = "wss://ws.blockchain.info/inv"; 
+var wsUri = "wss://transaction.watch/jsontx"; 
 var output;  
  
 function init() { 
@@ -258,12 +258,12 @@ function onClose(evt) { writeToScreen("DISCONNECTED"); }
 function onMessage(evt) { 
     // parse message
     var msg = JSON.parse(evt.data);
-    var txHash = msg.x.hash;
+    var txHash = msg.tx_hash;
     var links = [];
     if(msg.op == "utx") {
         // uncorfimed transactions
-        var inputs = msg.x.inputs;
-        var outputs = msg.x.out;
+        var inputs = msg.inputs;
+        var outputs = msg.outputs;
         // generate from to 
         var links = [];
         for(var i=0;i<inputs.length;i++){

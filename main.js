@@ -138,13 +138,15 @@ colorLinks = function(node, color) {
     if (node && node.id) {
         graph.forEachLinkedNode(node.id, function(node, link){
             var linkui = graphics.getLinkUI(link.id);
-            if (color) { 
-                linkui.start = linkui.end = color;
-            } else {
-                //link.ui.start = link.ui.oldStart; 
-                //link.ui.end =link.ui.oldEnd;
-                linkui.start = linkui.end = 0x80808040;
-            } 
+            try {
+                if (color) { 
+                    linkui.start = linkui.end = color;
+                } else {
+                    //link.ui.start = link.ui.oldStart; 
+                    //link.ui.end =link.ui.oldEnd;
+                    linkui.start = linkui.end = 0x80808040;
+                } 
+            } catch (e) {}
         });
     }
 };
@@ -197,7 +199,9 @@ var colorNodes = function(node, color) {
          graph.forEachNode(function(node){  
             if (color) { 
                 var ui = graphics.getNodeUI(node.id);
-                ui.color = color;
+                try {
+                    ui.color = color;
+                } catch(e){}
             }
         });
     }
@@ -216,7 +220,9 @@ function addNodes(link){
                 node.data.a = Date.now();
                 node.data.t = "mix";
                 var ui = graphics.getNodeUI(node.id);
-                ui.color = 16776960;
+                try {
+                    ui.color = 16776960;
+                } catch(){}
                 renderer.rerender();
             }
         }
@@ -233,7 +239,9 @@ function addNodes(link){
                 node.data.a = Date.now();
                 node.data.t = "mix";
                 var ui = graphics.getNodeUI(node.id);
-                ui.color = 16776960;
+                try {
+                    ui.color = 16776960;
+                } catch(){}
                 renderer.rerender();
             }
         }

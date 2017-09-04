@@ -222,7 +222,7 @@ function addNodes(link){
                 var ui = graphics.getNodeUI(node.id);
                 try {
                     ui.color = 16776960;
-                } catch(){}
+                } catch(e){}
                 renderer.rerender();
             }
         }
@@ -241,7 +241,7 @@ function addNodes(link){
                 var ui = graphics.getNodeUI(node.id);
                 try {
                     ui.color = 16776960;
-                } catch(){}
+                } catch(e){}
                 renderer.rerender();
             }
         }

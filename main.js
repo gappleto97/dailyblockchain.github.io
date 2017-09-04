@@ -99,7 +99,7 @@ getNodeDetails = function(node){
                 document.getElementById("info").innerHTML = label+"<br/>"+id+"<br/>balance: "+balance +" BTC<br/>remaining time:"+(node.data.a-Date.now()+maxage+node.links.length*25)/1000+"s";
             },
             error:function(){
-                document.getElementById("info").innerHTML = label+"<br/>"+id+"<br/>balance: throttled by Blockchain.info<br/>remaining time:"+(node.data.a-Date.now()+maxage+nodes.link.length*25)/1000+"s";
+                document.getElementById("info").innerHTML = label+"<br/>"+id+"<br/>balance: throttled by Blockchain.info<br/>remaining time:"+(node.data.a-Date.now()+maxage+node.links.length*25)/1000+"s";
             }
         });
         
@@ -159,8 +159,10 @@ events.mouseEnter(function(node){
  
     graph.forEachLinkedNode(node.id, function(node, link){
         var linkui = graphics.getLinkUI(link.id);
-        linkui.start = linkui.end = 0xffffffff;
-        graphics.bringLinkToFront(linkui);
+        try {
+            linkui.start = linkui.end = 0xffffffff;
+            graphics.bringLinkToFront(linkui);
+        } catch(e){}
     });
  
  renderer.rerender();
